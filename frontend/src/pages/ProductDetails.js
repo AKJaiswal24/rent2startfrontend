@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "../styles/product.css";
 
 function ProductDetails() {
@@ -15,11 +15,11 @@ function ProductDetails() {
 
   // 🔥 FETCH PRODUCT
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/products/${id}`)
+    api
+      .get(`/api/products/${id}`)
       .then((res) => {
         setProduct(res.data);
-        setMainImage(res.data.image);
+        setMainImage(res.data?.image || res.data?.images?.[0] || "");
 
         // ✅ DEFAULT PLAN (optional)
         if (res.data.pricing?.length > 0) {
@@ -34,7 +34,9 @@ function ProductDetails() {
           });
         }
       })
-      .catch((err) => console.log(err));
+      .catch(() => {
+        setProduct(null);
+      });
   }, [id]);
 
   // 🔥 ADD TO CART
@@ -51,7 +53,7 @@ function ProductDetails() {
     }
 
     try {
-      await axios.post("http://localhost:5000/api/cart/add", {
+      await api.post("/api/cart/add", {
         userId: user._id,
         productId: product._id,
         selectedPlan, // ✅ correct plan goes to backend
@@ -59,8 +61,7 @@ function ProductDetails() {
 
       alert("Added to cart ✅");
       window.dispatchEvent(new Event("cartUpdated"));
-    } catch (err) {
-      console.log(err);
+    } catch {
       alert("Error adding to cart");
     }
   };
@@ -78,15 +79,17 @@ function ProductDetails() {
         </div>
 
         <div className="thumbnail-row">
-          {[product.image, product.image, product.image].map((img, i) => (
-            <img
-              key={i}
-              src={img}
-              alt="thumb"
-              onClick={() => setMainImage(img)}
-              className={mainImage === img ? "active-thumb" : ""}
-            />
-          ))}
+          {(product.images?.length ? product.images : [product.image].filter(Boolean)).map(
+            (img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt="thumb"
+                onClick={() => setMainImage(img)}
+                className={mainImage === img ? "active-thumb" : ""}
+              />
+            )
+          )}
         </div>
 
       </div>

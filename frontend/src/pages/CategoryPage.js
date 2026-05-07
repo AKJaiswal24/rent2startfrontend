@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "../styles/landing.css"; // reuse grid styles
 
 function CategoryPage() {
@@ -13,11 +13,12 @@ function CategoryPage() {
   useEffect(() => {
     setLoading(true);
 
-    axios
-      .get(`http://localhost:5000/api/products`)
+    api
+      .get("/api/products")
       .then((res) => {
         // filter by category (case-insensitive)
-        const filtered = res.data.filter(
+        const data = Array.isArray(res.data) ? res.data : [];
+        const filtered = data.filter(
           (p) =>
             p.category &&
             p.category.toLowerCase() === categoryName.toLowerCase()
@@ -26,8 +27,8 @@ function CategoryPage() {
         setProducts(filtered);
         setLoading(false);
       })
-      .catch((err) => {
-        console.log(err);
+      .catch(() => {
+        setProducts([]);
         setLoading(false);
       });
   }, [categoryName]);
@@ -50,7 +51,7 @@ function CategoryPage() {
               key={item._id}
               onClick={() => navigate(`/product/${item._id}`)}
             >
-              <img src={item.image} alt={item.name} />
+              <img src={item.image || item.images?.[0]} alt={item.name} />
               <h4>{item.name}</h4>
 
               <p className="price">

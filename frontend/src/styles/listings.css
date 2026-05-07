@@ -34,6 +34,8 @@
 
 .actions {
   margin-top: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .delete {
@@ -43,4 +45,23 @@
   padding: 8px;
   border-radius: 6px;
   cursor: pointer;
+  flex: 1;
+}
+
+.edit {
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex: 1;
+}
+
+.edit:hover {
+  background: #1d4ed8;
+}
+
+.delete:hover {
+  background: #dc2626;
 }

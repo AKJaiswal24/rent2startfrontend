@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 import "../styles/auth.css";
 
-function SignupPage() {
+function LoginPage() {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
@@ -27,16 +26,17 @@ function SignupPage() {
     setLoading(true);
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        formData
-      );
+      const res = await api.post("/api/auth/login", formData);
 
-      alert("Account created successfully!");
+      // ✅ store token + user
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      navigate("/login");
+      alert("Login Successful");
+
+      navigate("/");
     } catch (err) {
-      alert(err.response?.data?.message || "Signup failed");
+      alert(err.response?.data?.message || "Login Failed");
     } finally {
       setLoading(false);
     }
@@ -45,26 +45,13 @@ function SignupPage() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-
         <div className="auth-header">
-          <h1>Create Account</h1>
-          <p>Join Start2Rent and start renting smarter</p>
+          <h1>Welcome Back</h1>
+          <p>Sign in to continue to Start2Rent</p>
         </div>
 
         <form className="auth-form" onSubmit={handleSubmit}>
-
-          <div className="form-group">
-            <label>Full Name</label>
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter your name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
+          
           <div className="form-group">
             <label>Email</label>
             <input
@@ -82,27 +69,37 @@ function SignupPage() {
             <input
               type="password"
               name="password"
-              placeholder="Create a password"
+              placeholder="Enter your password"
               value={formData.password}
               onChange={handleChange}
               required
             />
           </div>
 
+          <div className="form-options">
+            <label className="remember-me">
+              <input type="checkbox" />
+              <span>Remember me</span>
+            </label>
+            <Link to="#" className="forgot-link">
+              Forgot password?
+            </Link>
+          </div>
+
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? "Creating Account..." : "Sign Up"}
+            {loading ? "Signing In..." : "Sign In"}
           </button>
 
         </form>
 
         <div className="auth-footer">
           <p>
-            Already have an account? <Link to="/login">Login</Link>
+            Don't have an account? <Link to="/signup">Sign up</Link>
           </p>
         </div>
 
         <div className="divider">
-          <span>or sign up with</span>
+          <span>or continue with</span>
         </div>
 
         <div className="social-buttons">
@@ -122,7 +119,6 @@ function SignupPage() {
             Apple
           </button>
         </div>
-
       </div>
 
       <div className="auth-decoration">
@@ -134,4 +130,4 @@ function SignupPage() {
   );
 }
 
-export default SignupPage;
+export default LoginPage;

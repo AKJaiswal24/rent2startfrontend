@@ -3,7 +3,7 @@ import logo from "../assets/logo.png";
 import hero from "../assets/hero.png";
 import "../styles/landing.css";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/client";
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -40,12 +40,10 @@ useEffect(() => {
   if (!user) return;
 
   const fetchCart = () => {
-    axios
-      .get(`http://localhost:5000/api/cart/${user._id}`)
-      .then((res) => {
-        setCartCount(res.data.items?.length || 0);
-      })
-      .catch((err) => console.log(err));
+    api
+      .get(`/api/cart/${user._id}`)
+      .then((res) => setCartCount(res.data?.items?.length || 0))
+      .catch(() => setCartCount(0));
   };
 
   fetchCart();
@@ -69,16 +67,11 @@ useEffect(() => {
 
   // FETCH PRODUCTS
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/products")
-      .then((res) => {
-        setProducts(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
+    api
+      .get("/api/products")
+      .then((res) => setProducts(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false));
   }, []);
 
   // LOGOUT
@@ -228,7 +221,7 @@ useEffect(() => {
           ) : filteredProducts.length > 0 ? (
             filteredProducts.map((item) => (
               <div className="product-card-new" key={item._id}>
-                <img src={item.image} alt={item.name} />
+                <img src={item.image || item.images?.[0]} alt={item.name} />
                 <h4>{item.name}</h4>
                 <p className="price">₹{item.price}/day</p>
                 <button className="rent-btn">Explore</button>
@@ -250,7 +243,7 @@ useEffect(() => {
           ) : popularProducts.length > 0 ? (
             popularProducts.map((item) => (
               <div className="product-card-new" key={item._id}>
-                <img src={item.image} alt={item.name} />
+                <img src={item.image || item.images?.[0]} alt={item.name} />
                 <h4>{item.name}</h4>
                 <p className="price">₹{item.price}/day</p>
 

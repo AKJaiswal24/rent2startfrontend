@@ -11,8 +11,7 @@ import BecomeLender from "./pages/BecomeLender";
 import AddProduct from "./pages/AddProduct";
 import LenderRoute from "./components/LenderRoute";
 import MyListings from "./pages/MyListings";
-
-
+import EditProduct from "./pages/EditProduct";
 
 function App() {
   return (
@@ -23,14 +22,27 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<CartPage />} />
-<Route path="/category/:categoryName" element={<CategoryPage />} />
-<Route path="/checkout" element={<CheckoutPage />} />
-<Route path="/orders" element={<MyOrders />} />
-<Route path="/become-lender" element={<BecomeLender />} />
-<Route path="/add-product" element={<AddProduct />} />
-<Route path="/my-listings" element={<MyListings />} />
-<Route path="/my-listings" element={ <LenderRoute> <MyListings /> </LenderRoute> } />
-
+        <Route path="/category/:categoryName" element={<CategoryPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/orders" element={<MyOrders />} />
+        <Route path="/become-lender" element={<BecomeLender />} />
+        <Route path="/add-product" element={<AddProduct />} />
+        <Route
+          path="/my-listings"
+          element={
+            <LenderRoute>
+              <MyListings />
+            </LenderRoute>
+          }
+        />
+        <Route
+          path="/edit-product/:id"
+          element={
+            <LenderRoute>
+              <EditProduct />
+            </LenderRoute>
+          }
+        />
       </Routes>
     </Router>
   );
